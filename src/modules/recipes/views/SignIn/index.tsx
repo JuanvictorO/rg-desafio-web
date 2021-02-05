@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FiUserPlus, FiMail, FiLock } from 'react-icons/fi';
+import { FiUserPlus } from 'react-icons/fi';
 import { Link, useHistory } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
@@ -7,7 +7,6 @@ import * as Yup from 'yup';
 
 import logoImg from '../../../../assets/logo.svg';
 import { useAuth } from '../../../../hooks/auth';
-import { useToast } from '../../../../hooks/toast';
 import Button from '../../../../shared/components/Button';
 import Input from '../../../../shared/components/Input';
 
@@ -22,11 +21,10 @@ const SignIn: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const history = useHistory();
   const { signIn } = useAuth();
-  const { addToast } = useToast();
 
   // Essa validação vai para um arquivo separado depois
   const signInValidation = Yup.object().shape({
-    email: Yup.string()
+    login: Yup.string()
       .email('Digite um e-mail válido')
       .required('E-mail obrigatório')
       .email('Digite um e-mail válido'),
@@ -38,8 +36,8 @@ const SignIn: React.FC = () => {
       setLoading(true);
       try {
         await signIn({
-          email: data.email,
-          password: data.password,
+          login: data.email,
+          senha: data.password,
         });
 
         history.push('/dashboard');
@@ -48,15 +46,10 @@ const SignIn: React.FC = () => {
           setLoading(false);
           return;
         }
-        addToast({
-          type: 'error',
-          title: 'Erro ao realizar login',
-          description: 'Credenciais incorretas',
-        });
       }
       setLoading(false);
     },
-    [signIn, addToast, history],
+    [signIn, history],
   );
 
   return (
@@ -75,7 +68,6 @@ const SignIn: React.FC = () => {
                 <Input
                   name="email"
                   value={values.email}
-                  icon={FiMail}
                   error={errors.email}
                   type="text"
                   placeholder="E-mail"
@@ -83,7 +75,6 @@ const SignIn: React.FC = () => {
                 <Input
                   value={values.password}
                   name="password"
-                  icon={FiLock}
                   error={errors.password}
                   type="password"
                   placeholder="Senha"

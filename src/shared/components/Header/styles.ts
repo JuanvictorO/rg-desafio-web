@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 
-import colors from '../../../styles/colors';
-
 export const Container = styled.div`
-  background-color: ${colors.default};
+  background-color: gray;
   width: 100%;
   padding-left: 20px;
 
@@ -99,10 +97,4 @@ export const HeaderContainer = styled.div`
       }
     }
   }
-`;
-
-export const DropdownIcon = styled.div`
-  display: flex;
-  flex-direction: row;
-  color: #fff;
 `;

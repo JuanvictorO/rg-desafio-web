@@ -13,20 +13,16 @@ interface SignInCredentials {
 }
 
 interface User {
-  name: string;
+  id: number;
+  nome: string;
   login: string;
 }
 
-interface Info {
-  regionName: string;
-  countryCode: string;
-}
-
 interface AuthContextData {
-  signIn(credentials: SignInCredentials): Promise<void>;
-  signOut(): void;
   user: User;
   token: string;
+  signIn(credentials: SignInCredentials): Promise<void>;
+  signOut(): void;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -50,18 +46,16 @@ const AuthProvider: React.FC = ({ children }) => {
 
     const params = response.data[0];
 
-    const name = params.nome_social;
-    const token = params.sessiontoken;
+    const { id, nome, token } = params;
 
     const user: User = {
+      id,
       login,
-      name,
+      nome,
     };
 
     localStorage.setItem('@Ponteflix:token', token);
     localStorage.setItem('@Ponteflix:user', JSON.stringify(user));
-
-    // api.defaults.params.sessiontoken = sessiontoken;
 
     setData({ token, user });
   }, []);
@@ -80,7 +74,9 @@ const AuthProvider: React.FC = ({ children }) => {
         signOut,
         user: data.user,
         token: data.token,
-      }}>
+        // eslint-disable-next-line prettier/prettier
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

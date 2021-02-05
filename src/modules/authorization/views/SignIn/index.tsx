@@ -66,6 +66,7 @@ const SignIn: React.FC = () => {
           <Formik
             initialValues={{ login: '', senha: '' }}
             onSubmit={handleSubmit}
+            // eslint-disable-next-line prettier/prettier
             validationSchema={signInValidation}
           >
             {({ values, errors }) => (
