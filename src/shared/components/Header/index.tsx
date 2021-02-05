@@ -2,7 +2,7 @@ import React from 'react';
 import { BsXCircleFill } from 'react-icons/bs';
 // import { FiChevronDown } from 'react-icons/fi';
 
-import logoImg from '../../../assets/logo.svg';
+import logoImg from '../../../assets/logo.png';
 import { useAuth } from '../../../hooks/auth';
 
 import { Container, HeaderContainer } from './styles';

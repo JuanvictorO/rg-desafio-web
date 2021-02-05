@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Route from '../../../routes/Route';
-import SignIn from '../views/SignIn';
+import SignIn from '../views/MyRecipes';
 
 const AuthorizationRoute: React.FC = () => (
   <>

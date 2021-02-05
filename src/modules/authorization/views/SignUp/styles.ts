@@ -1,20 +1,27 @@
-import { shade } from 'polished';
+// import { shade } from 'polished';
 import styled from 'styled-components';
 
 export const Container = styled.div`
   height: 100vh;
   display: flex;
-  align-items: stretch;
+`;
+
+export const Content = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 `;
 
 export const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
 
-  align-items: center;
-
   img {
+    width: 200px;
+    height: auto;
     @media (max-width: 450px) {
       width: 200px;
     }
@@ -25,42 +32,41 @@ export const FormContainer = styled.div`
   }
 
   form {
-    margin: 40px 0;
-    width: 340px;
-    @media (max-width: 450px) {
-      width: 300px;
-    }
+    margin: 20px 0;
+    width: 320px;
     text-align: center;
 
     h1 {
-      margin-bottom: 24px;
-    }
-  }
-
-  > a {
-    display: flex;
-    align-items: center;
-    color: #fff;
-    text-decoration: none;
-    transition: color 0.2s;
-    font-size: 18px;
-    svg {
-      margin-right: 10px;
-      margin-top: 0px;
+      font-size: 36px;
+      margin-bottom: 30px;
     }
 
-    &:hover {
-      color: ${shade(0.2, '#fff')};
+    input {
+      & + input {
+        margin-top: 20px;
+      }
     }
   }
 `;
 
-export const Content = styled.div`
+export const DivBox = styled.div`
+  margin-top: 30px !important;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
 
-  align-items: center;
+  a {
+    margin-top: 12px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s;
 
-  width: 100%;
+    &:hover {
+      color: rgb(29, 161, 242);
+    }
+
+    svg {
+      margin-bottom: -7px;
+    }
+  }
 `;

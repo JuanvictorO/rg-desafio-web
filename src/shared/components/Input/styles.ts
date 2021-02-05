@@ -12,32 +12,33 @@ export const Container = styled.div<ContainerProps>`
   position: relative;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #757575;
+  border-bottom: 1px solid white;
 
   & + div {
-    margin-top: 45px;
+    margin-top: 40px;
   }
 
   ${(props) =>
     props.isErrored &&
     css`
-      border-color: #d00000;
+      border-color: red;
     `}
 
   ${(props) =>
     props.isFocused &&
     css`
-      border-color: #5264ae;
+      border-color: rgb(29, 161, 242);
     `}
 
   ${(props) =>
     props.isFilled &&
     css`
-      border-color: #5264ae;
+      border-color: rgb(29, 161, 242);
     `}
 
 
   input {
+    color: white;
     background: transparent;
     font-size: 18px;
     padding: 10px 10px 10px 5px;
@@ -57,7 +58,7 @@ export const Container = styled.div<ContainerProps>`
     &:invalid ~ label {
       top: -20px;
       font-size: 14px;
-      color: #5264ae;
+      color: rgb(29, 161, 242);
     }
 
     &:focus ~ label:first-child {
@@ -68,7 +69,7 @@ export const Container = styled.div<ContainerProps>`
   }
 
   label {
-    color: #999;
+    color: white;
     font-size: 18px;
     font-weight: normal;
     position: absolute;
@@ -84,7 +85,7 @@ export const Container = styled.div<ContainerProps>`
       css`
         top: -20px;
         font-size: 14px;
-        color: #5264ae;
+        color: rgb(29, 161, 242);
       `}
   }
 

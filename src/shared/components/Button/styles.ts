@@ -2,7 +2,7 @@ import { shade } from 'polished';
 import styled from 'styled-components';
 
 export const Container = styled.button`
-  background: #ff7300;
+  background: rgb(29, 161, 242);
   border-radius: 5px;
   border: 0;
   padding: 10px 20px;
@@ -14,11 +14,11 @@ export const Container = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: ${shade(0.2, '#7129cd')};
+    background-color: ${shade(0.2, 'rgb(56, 68, 77)')};
   }
 
   &:disabled {
     cursor: wait;
-    background-color: ${shade(0.7, '#7129cd')};
+    background-color: ${shade(0.7, 'rgb(56, 68, 77)')};
   }
 `;

@@ -1,56 +1,67 @@
 import React, { useCallback, useState } from 'react';
-import { FiArrowLeft } from 'react-icons/fi';
+import { BiChevronLeft } from 'react-icons/bi';
 import { Link, useHistory } from 'react-router-dom';
 
-import { Formik } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
-import logoImg from '../../../../assets/logo.svg';
-// import { useToast } from '../../../../hooks/toast';
+import logoImg from '../../../../assets/logo.png';
+import { useToast } from '../../../../hooks/toast';
 import Button from '../../../../shared/components/Button';
 import Input from '../../../../shared/components/Input';
 import api from '../../../../shared/services/api';
 
-import { Container, Content, FormContainer } from './styles';
+import { Container, Content, FormContainer, DivBox } from './styles';
 
 interface SignUpFormData {
-  name: string;
-  email: string;
-  password: string;
+  nome: string;
+  login: string;
+  senha: string;
 }
 
 const SignUp: React.FC = () => {
-  // const { addToast } = useToast();
-  const history = useHistory();
   const [loading, setLoading] = useState<boolean>(false);
+  const { addToast } = useToast();
+  const history = useHistory();
+
+  // Essa validação vai para um arquivo separado depois
+  const signInValidation = Yup.object().shape({
+    nome: Yup.string().required('O nome é obrigatório'),
+    login: Yup.string()
+      .email('Digite um e-mail válido')
+      .required('E-mail obrigatório')
+      .email('Digite um e-mail válido'),
+    senha: Yup.string()
+      .required('A senha é obrigatória')
+      .min(8, 'Senha muito curta'),
+  });
+
   const handleSubmit = useCallback(
     async (data: SignUpFormData) => {
       setLoading(true);
       try {
-        const schema = Yup.object().shape({
-          name: Yup.string().required('Nome obrigatório'),
-          email: Yup.string()
-            .email('Digite um e-mail válido')
-            .required('E-mail obrigatório')
-            .email('Digite um e-mail válido'),
-          password: Yup.string().required('Senha obrigatória'),
+        await api.post('users/', data);
+
+        addToast({
+          type: 'success',
+          title: 'Usuário cadastrado!',
         });
 
-        await schema.validate(data, { abortEarly: false });
-
-        await api.post('users', data);
-
-        history.push('/');
+        history.push('/dashboard');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           setLoading(false);
           return;
         }
+        addToast({
+          type: 'error',
+          title: 'Erro de registro',
+          description: 'Ocorreu um erro ao registrar, tente novamente!',
+        });
       }
       setLoading(false);
     },
-
-    [history],
+    [addToast, history],
   );
 
   return (
@@ -59,25 +70,48 @@ const SignUp: React.FC = () => {
         <FormContainer>
           <img src={logoImg} alt="Ponteflix" />
           <Formik
-            initialValues={{ email: '', password: '', name: '' }}
-            onSubmit={handleSubmit}>
-            <form onSubmit={() => handleSubmit}>
-              <h1>Faça seu cadastro</h1>
+            initialValues={{ nome: '', login: '', senha: '' }}
+            onSubmit={handleSubmit}
+            // eslint-disable-next-line prettier/prettier
+            validationSchema={signInValidation}
+          >
+            {({ values, errors }) => (
+              <Form>
+                <h1>Faça seu login</h1>
+                <Input
+                  name="nome"
+                  value={values.nome}
+                  error={errors.nome}
+                  type="text"
+                  label="Nome"
+                />
+                <Input
+                  name="login"
+                  value={values.login}
+                  error={errors.login}
+                  type="text"
+                  label="Email"
+                />
+                <Input
+                  value={values.senha}
+                  name="senha"
+                  error={errors.senha}
+                  type="senha"
+                  label="Senha"
+                />
 
-              <Input name="name" type="text" placeholder="Nome" />
-              <Input name="email" type="email" placeholder="E-mail" />
-              <Input name="password" type="password" placeholder="Senha" />
-
-              <Button type="submit" loading={loading}>
-                Cadastrar
-              </Button>
-            </form>
+                <DivBox>
+                  <Link to="/">
+                    <BiChevronLeft size="24" />
+                    Voltar
+                  </Link>
+                  <Button type="submit" loading={loading}>
+                    Enviar
+                  </Button>
+                </DivBox>
+              </Form>
+            )}
           </Formik>
-
-          <Link to="/">
-            <FiArrowLeft />
-            Voltar para login
-          </Link>
         </FormContainer>
       </Content>
     </Container>

@@ -1,16 +1,17 @@
 import React, { useCallback, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { BiChevronRight } from 'react-icons/bi';
+import { Link, useHistory } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
-import logoImg from '../../../../assets/logo.svg';
-// import { useToast } from '../../../../hooks';
+import logoImg from '../../../../assets/logo.png';
 import { useAuth } from '../../../../hooks/auth';
+import { useToast } from '../../../../hooks/toast';
 import Button from '../../../../shared/components/Button';
 import Input from '../../../../shared/components/Input';
 
-import { Container, Content, FormContainer } from './styles';
+import { Container, Content, FormContainer, DivBox } from './styles';
 
 interface SignInFormData {
   login: string;
@@ -20,8 +21,9 @@ interface SignInFormData {
 const SignIn: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const history = useHistory();
+
   const { signIn } = useAuth();
-  // const { addToast } = useToast();
+  const { addToast } = useToast();
 
   // Essa validação vai para um arquivo separado depois
   const signInValidation = Yup.object().shape({
@@ -29,7 +31,9 @@ const SignIn: React.FC = () => {
       .email('Digite um e-mail válido')
       .required('E-mail obrigatório')
       .email('Digite um e-mail válido'),
-    senha: Yup.string().required('A senha é obrigatória'),
+    senha: Yup.string()
+      .required('A senha é obrigatória')
+      .min(8, 'Senha muito curta'),
   });
 
   const handleSubmit = useCallback(
@@ -47,15 +51,15 @@ const SignIn: React.FC = () => {
           setLoading(false);
           return;
         }
-        /* addToast({
+        addToast({
           type: 'error',
-          title: 'Erro ao realizar login',
-          description: 'Credenciais incorretas',
-        }); */
+          title: 'Erro ao logar',
+          description: 'Login ou senha estão incorretoss',
+        });
       }
       setLoading(false);
     },
-    [signIn, history /* , addToast, */],
+    [signIn, history, addToast],
   );
 
   return (
@@ -77,18 +81,25 @@ const SignIn: React.FC = () => {
                   value={values.login}
                   error={errors.login}
                   type="text"
-                  placeholder="Login"
+                  label="Email"
                 />
                 <Input
                   value={values.senha}
                   name="senha"
                   error={errors.senha}
                   type="senha"
-                  placeholder="Senha"
+                  label="Senha"
                 />
-                <Button type="submit" loading={loading}>
-                  Entrar
-                </Button>
+
+                <DivBox>
+                  <Link to="/cadastro">
+                    Criar conta
+                    <BiChevronRight size="24" />
+                  </Link>
+                  <Button type="submit" loading={loading}>
+                    Entrar
+                  </Button>
+                </DivBox>
               </Form>
             )}
           </Formik>
