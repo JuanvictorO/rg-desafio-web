@@ -3,6 +3,8 @@ import React from 'react';
 
 // import { useAuth } from '../../../../hooks/auth';
 
+import Header from '../../../../shared/components/Header';
+
 import { Container, Content } from './styles';
 
 const MyRecipes: React.FC = () => {
@@ -12,6 +14,7 @@ const MyRecipes: React.FC = () => {
   return (
     <Container>
       <Content />
+      <Header />
     </Container>
   );
 };
