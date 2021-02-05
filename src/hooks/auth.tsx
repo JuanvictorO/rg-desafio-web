@@ -8,20 +8,25 @@ interface AuthState {
 }
 
 interface SignInCredentials {
-  email: string;
-  password: string;
+  login: string;
+  senha: string;
 }
 
 interface User {
-  id: number;
   name: string;
-  email: string;
+  login: string;
+}
+
+interface Info {
+  regionName: string;
+  countryCode: string;
 }
 
 interface AuthContextData {
-  user: User;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
+  user: User;
+  token: string;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -32,35 +37,31 @@ const AuthProvider: React.FC = ({ children }) => {
     const user = localStorage.getItem('@Ponteflix:user');
 
     if (token && user) {
-      api.defaults.headers.authorization = `Bearer ${token}`;
       return { token, user: JSON.parse(user) };
     }
 
     return {} as AuthState;
   });
-  const signIn = useCallback(async ({ email, _password }) => {
-    /*
-    // Commented use fake login
+  const signIn = useCallback(async ({ login, senha }) => {
     const response = await api.post('sessions', {
-      email,
-      password,
+      login,
+      senha,
     });
 
-    const { token, user }: AuthState = response.data;
-    */
+    const params = response.data[0];
 
-    const token = '12345678910';
+    const name = params.nome_social;
+    const token = params.sessiontoken;
 
-    const user = {
-      id: 1,
-      name: 'Matheus de Castro',
-      email,
+    const user: User = {
+      login,
+      name,
     };
 
     localStorage.setItem('@Ponteflix:token', token);
     localStorage.setItem('@Ponteflix:user', JSON.stringify(user));
 
-    api.defaults.headers.authorization = `Bearer ${token}`;
+    // api.defaults.params.sessiontoken = sessiontoken;
 
     setData({ token, user });
   }, []);
@@ -73,7 +74,13 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{
+        signIn,
+        signOut,
+        user: data.user,
+        token: data.token,
+      }}>
       {children}
     </AuthContext.Provider>
   );

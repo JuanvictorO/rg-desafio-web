@@ -1,36 +1,35 @@
 import React, { useCallback, useState } from 'react';
-import { FiUserPlus, FiMail, FiLock } from 'react-icons/fi';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
 import logoImg from '../../../../assets/logo.svg';
+// import { useToast } from '../../../../hooks';
 import { useAuth } from '../../../../hooks/auth';
-import { useToast } from '../../../../hooks/toast';
 import Button from '../../../../shared/components/Button';
 import Input from '../../../../shared/components/Input';
 
 import { Container, Content, FormContainer } from './styles';
 
 interface SignInFormData {
-  email: string;
-  password: string;
+  login: string;
+  senha: string;
 }
 
 const SignIn: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const history = useHistory();
   const { signIn } = useAuth();
-  const { addToast } = useToast();
+  // const { addToast } = useToast();
 
   // Essa validação vai para um arquivo separado depois
   const signInValidation = Yup.object().shape({
-    email: Yup.string()
+    login: Yup.string()
       .email('Digite um e-mail válido')
       .required('E-mail obrigatório')
       .email('Digite um e-mail válido'),
-    password: Yup.string().required('A senha é obrigatória'),
+    senha: Yup.string().required('A senha é obrigatória'),
   });
 
   const handleSubmit = useCallback(
@@ -38,8 +37,8 @@ const SignIn: React.FC = () => {
       setLoading(true);
       try {
         await signIn({
-          email: data.email,
-          password: data.password,
+          login: data.login,
+          senha: data.senha,
         });
 
         history.push('/dashboard');
@@ -48,15 +47,15 @@ const SignIn: React.FC = () => {
           setLoading(false);
           return;
         }
-        addToast({
+        /* addToast({
           type: 'error',
           title: 'Erro ao realizar login',
           description: 'Credenciais incorretas',
-        });
+        }); */
       }
       setLoading(false);
     },
-    [signIn, addToast, history],
+    [signIn, history /* , addToast, */],
   );
 
   return (
@@ -65,7 +64,7 @@ const SignIn: React.FC = () => {
         <FormContainer>
           <img src={logoImg} alt="Ponteflix" />
           <Formik
-            initialValues={{ email: '', password: '' }}
+            initialValues={{ login: '', senha: '' }}
             onSubmit={handleSubmit}
             validationSchema={signInValidation}
           >
@@ -73,19 +72,17 @@ const SignIn: React.FC = () => {
               <Form>
                 <h1>Faça seu login</h1>
                 <Input
-                  name="email"
-                  value={values.email}
-                  icon={FiMail}
-                  error={errors.email}
+                  name="login"
+                  value={values.login}
+                  error={errors.login}
                   type="text"
-                  placeholder="E-mail"
+                  placeholder="Login"
                 />
                 <Input
-                  value={values.password}
-                  name="password"
-                  icon={FiLock}
-                  error={errors.password}
-                  type="password"
+                  value={values.senha}
+                  name="senha"
+                  error={errors.senha}
+                  type="senha"
                   placeholder="Senha"
                 />
                 <Button type="submit" loading={loading}>
@@ -94,11 +91,6 @@ const SignIn: React.FC = () => {
               </Form>
             )}
           </Formik>
-
-          <Link to="/signup">
-            <FiUserPlus size={18} />
-            Criar conta
-          </Link>
         </FormContainer>
       </Content>
     </Container>
