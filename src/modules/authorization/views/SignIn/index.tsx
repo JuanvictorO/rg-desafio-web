@@ -54,7 +54,7 @@ const SignIn: React.FC = () => {
         addToast({
           type: 'error',
           title: 'Erro ao logar',
-          description: 'Login ou senha estão incorretoss',
+          description: 'Creddenciais incorretas',
         });
       }
       setLoading(false);

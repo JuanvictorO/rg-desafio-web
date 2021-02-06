@@ -44,9 +44,9 @@ const AuthProvider: React.FC = ({ children }) => {
       senha,
     });
 
-    const params = response.data[0];
+    const params = response.data;
 
-    const { id, nome, token } = params;
+    const { id, nome, token } = params.user;
 
     const user: User = {
       id,

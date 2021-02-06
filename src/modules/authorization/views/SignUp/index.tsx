@@ -40,14 +40,14 @@ const SignUp: React.FC = () => {
     async (data: SignUpFormData) => {
       setLoading(true);
       try {
-        await api.post('users/', data);
+        await api.post('users', data);
 
         addToast({
           type: 'success',
           title: 'Usuário cadastrado!',
         });
 
-        history.push('/dashboard');
+        history.push('/');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           setLoading(false);
@@ -77,7 +77,7 @@ const SignUp: React.FC = () => {
           >
             {({ values, errors }) => (
               <Form>
-                <h1>Faça seu login</h1>
+                <h1>Cadastre-se</h1>
                 <Input
                   name="nome"
                   value={values.nome}

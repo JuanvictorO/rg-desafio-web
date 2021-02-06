@@ -1,22 +1,24 @@
 import React from 'react';
-import { BsXCircleFill } from 'react-icons/bs';
+import { FiLogOut } from 'react-icons/fi';
 
 import logoImg from '../../../assets/logo.png';
-// import { useAuth } from '../../../hooks/auth';
+import { useAuth } from '../../../hooks/auth';
 
-import { Container, HeaderContainer } from './styles';
+import { Container, HeaderContainer, DivLogo, DivLogout } from './styles';
 
 const Header: React.FC = () => {
-  // const { user } = useAuth();
+  const { signOut, user } = useAuth();
   return (
     <Container>
       <HeaderContainer>
-        <img src={logoImg} alt="Desafio RG" />
-        <p> Juan Victor </p>
-        <div>
-          <BsXCircleFill color="#fff" size={20} />
-          <p>Salir </p>
-        </div>
+        <DivLogo>
+          <img src={logoImg} alt="Desafio RG" />
+          <p>Olá, {user.nome}!</p>
+        </DivLogo>
+        <DivLogout onClick={signOut}>
+          <p>Sair</p>
+          <FiLogOut color="white" size={20} />
+        </DivLogout>
       </HeaderContainer>
     </Container>
   );

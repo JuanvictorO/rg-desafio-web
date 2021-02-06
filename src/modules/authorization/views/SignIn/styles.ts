@@ -23,7 +23,7 @@ export const FormContainer = styled.div`
     width: 200px;
     height: auto;
     @media (max-width: 450px) {
-      width: 200px;
+      width: 150px;
     }
   }
 
