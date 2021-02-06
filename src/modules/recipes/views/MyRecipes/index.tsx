@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
 
-import { useAuth } from '../../../../hooks/auth';
 import { useToast } from '../../../../hooks/toast';
 import Button from '../../../../shared/components/Button';
 import Header from '../../../../shared/components/Header';
@@ -23,7 +22,7 @@ interface SearchFormData {
 
 interface Recipe {
   id: number;
-  name: string;
+  nome: string;
   tempo_preparo_minutos: number;
   porcoes: number;
   modo_preparo: string;
@@ -35,18 +34,16 @@ interface Recipe {
 }
 
 const MyRecipes: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [recipes, setRecipes] = useState<Recipe[] | null>(null);
-  // const history = useHistory();
+
   const { addToast } = useToast();
 
   const handleSubmit = useCallback(
     async (data: SearchFormData) => {
       setLoading(true);
       try {
-        const response = await api.get(`/recipes/search?search=${data.search}`);
+        const response = await api.get(`/recipes/search/${data.search}`);
         console.log(response.data);
         return;
       } catch (err) {
@@ -61,21 +58,35 @@ const MyRecipes: React.FC = () => {
     [addToast],
   );
 
-  useEffect(() => {
-    async function loadData(): Promise<void> {
-      setLoading(true);
+  async function deleteRecipe(id: number): Promise<void> {
+    try {
+      await api.delete(`recipes/${id}`);
 
-      try {
-        const response = await api.get<Recipe[]>('recipes/index');
-
-        setRecipes(response.data);
-      } catch (err) {
-        setRecipes(null);
-      } finally {
-        setLoading(false);
-      }
+      window.location.reload();
+    } catch (err) {
+      addToast({
+        type: 'error',
+        title: 'Algo deu errado',
+        description: 'Tente novamente',
+      });
     }
+  }
 
+  async function loadData(): Promise<void> {
+    setLoading(true);
+
+    try {
+      const response = await api.get<Recipe[]>('recipes/index');
+
+      setRecipes(response.data);
+    } catch (err) {
+      setRecipes(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     loadData();
   }, []);
 
@@ -109,33 +120,38 @@ const MyRecipes: React.FC = () => {
               <th>Categoria</th>
               <th>Ações</th>
             </tr>
-            <tr>
-              <td>Teste</td>
-              <td>Teste</td>
-              <td className="acoes">
-                <AiOutlineFolderView />
+            {!loading &&
+              recipes &&
+              recipes.map((recipe) => (
+                <tr>
+                  <td>{recipe.nome}</td>
+                  <td>{recipe.categoria.nome}</td>
+                  <td className="acoes">
+                    <Link to={`/show/${recipe.id}`}>
+                      <AiOutlineFolderView />
+                    </Link>
 
-                <Link to="/update">
-                  <AiFillEdit />
-                </Link>
-                <AiFillDelete />
-              </td>
-            </tr>
-            <tr>
-              <td>Teste</td>
-              <td>Teste</td>
-              <td>Teste</td>
-            </tr>
-            <tr>
-              <td>Teste</td>
-              <td>Teste</td>
-              <td>Teste</td>
-            </tr>
-            <tr>
-              <td>Teste</td>
-              <td>Teste</td>
-              <td>Teste</td>
-            </tr>
+                    <Link to={`/update/${recipe.id}`}>
+                      <AiFillEdit />
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        deleteRecipe(recipe.id);
+                        // eslint-disable-next-line prettier/prettier
+                      }}
+                    >
+                      <AiFillDelete />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+
+            {!loading && recipes?.length === 0 && (
+              <tr id="error">
+                <td colSpan={3}>Não há nenhuma receita cadastrada!</td>
+              </tr>
+            )}
           </Table>
         </Content>
       </Container>

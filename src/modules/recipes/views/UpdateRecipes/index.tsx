@@ -10,6 +10,7 @@ import Button from '../../../../shared/components/Button';
 import Header from '../../../../shared/components/Header';
 import Input from '../../../../shared/components/Input';
 import api from '../../../../shared/services/api';
+import { addRecipeValidation } from '../../validations/addRecipeValidation';
 
 import { Container, Content, FormContainer, DivBox } from './styles';
 
@@ -29,21 +30,12 @@ interface Category {
 
 const UpdateRecipe: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [categories, setCategories] = useState<Category[] | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [recipe, setRecipe] = useState<UpdateRecipeFormData | null>(null);
   const history = useHistory();
 
   const { addToast } = useToast();
-
-  // Essa validação vai para um arquivo separado depois
-  const updateRecipeValidation = Yup.object().shape({
-    nome: Yup.string().required('Nome obrigatório'),
-    id_categorias: Yup.number().required('Categoria obrigatória'),
-    tempo_preparo: Yup.number(),
-    porcoes: Yup.number(),
-  });
 
   const handleSubmit = useCallback(
     async (data: UpdateRecipeFormData) => {
@@ -71,11 +63,29 @@ const UpdateRecipe: React.FC = () => {
         setLoading(false);
       }
     },
-    [addToast],
+    [addToast, history],
   );
 
   useEffect(() => {
     async function loadData(): Promise<void> {
+      setLoading(true);
+
+      try {
+        const response = await api.get('categories');
+
+        setCategories(response.data);
+      } catch (err) {
+        addToast({
+          type: 'error',
+          title: 'Erro na API',
+          description: 'Ocorreu um erro, tente novamente mais tarde',
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function loadData2(): Promise<void> {
       setLoading(true);
 
       try {
@@ -94,7 +104,8 @@ const UpdateRecipe: React.FC = () => {
     }
 
     loadData();
-  }, []);
+    loadData2();
+  }, [addToast]);
 
   return (
     <>
@@ -113,7 +124,7 @@ const UpdateRecipe: React.FC = () => {
               }}
               onSubmit={handleSubmit}
               // eslint-disable-next-line prettier/prettier
-              validationSchema={updateRecipeValidation}
+              validationSchema={addRecipeValidation}
             >
               {({ values, errors }) => (
                 <Form id="Addreceita">
@@ -134,9 +145,12 @@ const UpdateRecipe: React.FC = () => {
                     <select
                       id="categoria"
                       value={values.id_categorias}
-                      // eslint-disable-next-line react/jsx-closing-bracket-location
                       name="id_categorias">
-                      <option value="1">Teste</option>
+                      {!loading &&
+                        categories &&
+                        categories.map((category) => (
+                          <option value={category.id}>{category.nome}</option>
+                        ))}
                     </select>
                   </div>
                   <div>

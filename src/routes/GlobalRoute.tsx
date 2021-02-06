@@ -15,8 +15,8 @@ const GlobalRoute: React.FC = () => (
     <Route path="/cadastro" component={SignUp} />
     <Route path="/dashboard" component={MyRecipes} isPrivate />
     <Route path="/add" component={AddRecipes} isPrivate />
-    <Route path="/update" component={UpdateRecipes} isPrivate />
-    <Route path="/show" component={ShowRecipes} isPrivate />
+    <Route path="/update/:id" component={UpdateRecipes} isPrivate />
+    <Route path="/show/:id" component={ShowRecipes} isPrivate />
   </Switch>
 );
 

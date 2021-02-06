@@ -29,10 +29,12 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>(() => {
-    const token = localStorage.getItem('@Ponteflix:token');
-    const user = localStorage.getItem('@Ponteflix:user');
+    const token = localStorage.getItem('@Recipes:token');
+    const user = localStorage.getItem('@Recipes:user');
 
     if (token && user) {
+      api.defaults.headers.authorization = `Bearer ${token}`;
+
       return { token, user: JSON.parse(user) };
     }
 
@@ -46,7 +48,8 @@ const AuthProvider: React.FC = ({ children }) => {
 
     const params = response.data;
 
-    const { id, nome, token } = params.user;
+    const { token } = params;
+    const { id, nome } = params.user;
 
     const user: User = {
       id,
@@ -54,15 +57,17 @@ const AuthProvider: React.FC = ({ children }) => {
       nome,
     };
 
-    localStorage.setItem('@Ponteflix:token', token);
-    localStorage.setItem('@Ponteflix:user', JSON.stringify(user));
+    localStorage.setItem('@Recipes:token', token);
+    localStorage.setItem('@Recipes:user', JSON.stringify(user));
+
+    api.defaults.headers.authorization = `Bearer ${token}`;
 
     setData({ token, user });
   }, []);
 
   const signOut = useCallback(() => {
-    localStorage.removeItem('@Ponteflix:token');
-    localStorage.removeItem('@Ponteflix:user');
+    localStorage.removeItem('@Recipes:token');
+    localStorage.removeItem('@Recipes:user');
 
     setData({} as AuthState);
   }, []);

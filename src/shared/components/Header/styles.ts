@@ -47,6 +47,7 @@ export const DivLogo = styled.div`
 `;
 
 export const DivLogout = styled.div`
+  cursor: pointer;
   margin-top: 13px;
   font-weight: bold;
   transition: color 0.1s;

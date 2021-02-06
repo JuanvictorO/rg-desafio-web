@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-closing-bracket-location */
 import React, { useEffect } from 'react';
 import {
   FiAlertCircle,
@@ -40,7 +39,9 @@ const Toast: React.FC<ToastContainerProps> = ({ message, style }) => {
       key={message.id}
       type={message.type}
       style={style}
-      hasDescription={!!message.description}>
+      // eslint-disable-next-line prettier/prettier
+      hasDescription={!!message.description}
+    >
       {icons[message.type || 'info']}
 
       <div>

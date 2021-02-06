@@ -10,6 +10,7 @@ import { useToast } from '../../../../hooks/toast';
 import Button from '../../../../shared/components/Button';
 import Input from '../../../../shared/components/Input';
 import api from '../../../../shared/services/api';
+import { signUpValidation } from '../../validations/signUpValidation';
 
 import { Container, Content, FormContainer, DivBox } from './styles';
 
@@ -23,18 +24,6 @@ const SignUp: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { addToast } = useToast();
   const history = useHistory();
-
-  // Essa validação vai para um arquivo separado depois
-  const signInValidation = Yup.object().shape({
-    nome: Yup.string().required('O nome é obrigatório'),
-    login: Yup.string()
-      .email('Digite um e-mail válido')
-      .required('E-mail obrigatório')
-      .email('Digite um e-mail válido'),
-    senha: Yup.string()
-      .required('A senha é obrigatória')
-      .min(8, 'Senha muito curta'),
-  });
 
   const handleSubmit = useCallback(
     async (data: SignUpFormData) => {
@@ -73,7 +62,7 @@ const SignUp: React.FC = () => {
             initialValues={{ nome: '', login: '', senha: '' }}
             onSubmit={handleSubmit}
             // eslint-disable-next-line prettier/prettier
-            validationSchema={signInValidation}
+            validationSchema={signUpValidation}
           >
             {({ values, errors }) => (
               <Form>

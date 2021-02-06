@@ -10,13 +10,17 @@ import Button from '../../../../shared/components/Button';
 import Header from '../../../../shared/components/Header';
 import Input from '../../../../shared/components/Input';
 import api from '../../../../shared/services/api';
+import { addRecipeValidation } from '../../validations/addRecipeValidation';
 
 import { Container, Content, FormContainer, DivBox } from './styles';
 
 interface addRecipeFormData {
   nome: string;
-  tempo_preparo_minutos: number;
-  porcoes: number;
+  id_categorias: number;
+  tempo_preparo_minutos: string;
+  porcoes: string;
+  modo_preparo: string | null;
+  ingredientes: string;
 }
 
 interface Category {
@@ -26,24 +30,23 @@ interface Category {
 
 const AddRecipe: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [categories, setCategories] = useState<Category[] | null>(null);
 
   const { addToast } = useToast();
-
-  // Essa validação vai para um arquivo separado depois
-  const addRecipeValidation = Yup.object().shape({
-    nome: Yup.string().required('Nome obrigatório'),
-    tempo_preparo: Yup.number(),
-    porcoes: Yup.number(),
-  });
 
   const handleSubmit = useCallback(
     async (data: addRecipeFormData) => {
       setLoading(true);
       try {
-        await api.post('recipes', data);
-
+        // const preparo = document.getElementById('preparo').value;
+        await api.post('recipes', {
+          id_categorias: data.id_categorias,
+          nome: data.nome,
+          tempo_preparo_minutos: data.tempo_preparo_minutos,
+          porcoes: data.porcoes,
+          modo_preparo: data.modo_preparo,
+        });
+        console.log(data);
         addToast({
           type: 'success',
           title: 'Receita cadastrada',
@@ -98,8 +101,11 @@ const AddRecipe: React.FC = () => {
             <Formik
               initialValues={{
                 nome: '',
-                tempo_preparo_minutos: 30,
-                porcoes: 1,
+                id_categorias: 1,
+                tempo_preparo_minutos: '',
+                porcoes: '',
+                modo_preparo: '',
+                ingredientes: '',
               }}
               onSubmit={handleSubmit}
               // eslint-disable-next-line prettier/prettier
@@ -119,28 +125,43 @@ const AddRecipe: React.FC = () => {
                   <div className="divSelect">
                     <p>Categoria: </p>
                     <select id="categoria" name="id_categorias">
-                      <option value="1">Teste</option>
+                      {!loading &&
+                        categories &&
+                        categories.map((category) => (
+                          <option value={category.id}>{category.nome}</option>
+                        ))}
                     </select>
                   </div>
 
                   <Input
                     name="tempo_preparo_minutos"
                     defaultValue=""
+                    value={values.tempo_preparo_minutos}
                     error={errors.tempo_preparo_minutos}
                     type="number"
                     label="Tempo de preparo"
                   />
                   <Input
                     name="porcoes"
-                    defaultValue=""
+                    value={values.porcoes}
                     error={errors.porcoes}
                     type="number"
                     label="Quantidade de porçôes"
                   />
 
-                  <textarea name="modo_preparo" placeholder="Modo de Preparo" />
+                  <textarea
+                    id="preparo"
+                    name="modo_preparo"
+                    defaultValue={values.modo_preparo}
+                    placeholder="Modo de Preparo"
+                  />
 
-                  <textarea name="ingredientes" placeholder="Ingredientes" />
+                  <textarea
+                    id="ingredientes"
+                    name="ingredientes"
+                    defaultValue=""
+                    placeholder="Ingredientes"
+                  />
 
                   <DivBox>
                     <Link to="/">

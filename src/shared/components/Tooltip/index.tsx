@@ -21,5 +21,3 @@ const Tooltip: React.FC<TooltipProps> = ({
 };
 
 export default Tooltip;
-
-// tooltip é o texto que aparece em cima do erro.

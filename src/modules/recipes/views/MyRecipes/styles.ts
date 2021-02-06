@@ -26,7 +26,14 @@ export const Content = styled.div`
     flex-direction: row;
     justify-content: space-between;
 
+    @media (max-width: 550px) {
+      flex-direction: column;
+    }
+
     form {
+      @media (max-width: 550px) {
+        margin-bottom: 20px;
+      }
       input {
         border-width: 0px;
         background: white;
@@ -66,6 +73,14 @@ export const Table = styled.table`
     }
   }
 
+  #error {
+    width: 100%;
+    height: 200px;
+    font-weight: 600;
+    text-align: center;
+    background: white;
+  }
+
   tr + tr {
     td {
       font-weight: 500;
@@ -86,7 +101,12 @@ export const Table = styled.table`
   .acoes {
     width: 15%;
     text-align: center;
+    button {
+      border-width: 0;
+      background: transparent;
+    }
     svg {
+      color: black;
       font-size: 20px;
       margin: 0 4px;
     }
