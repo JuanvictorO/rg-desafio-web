@@ -12,6 +12,7 @@ import { Formik, Form } from 'formik';
 import { useToast } from '../../../../hooks/toast';
 import Button from '../../../../shared/components/Button';
 import Header from '../../../../shared/components/Header';
+import Input from '../../../../shared/components/Input';
 import api from '../../../../shared/services/api';
 
 import { Container, Content, Table } from './styles';
@@ -44,8 +45,8 @@ const MyRecipes: React.FC = () => {
       setLoading(true);
       try {
         const response = await api.get(`/recipes/search/${data.search}`);
-        console.log(response.data);
-        return;
+
+        setRecipes(response.data);
       } catch (err) {
         addToast({
           type: 'error',
@@ -57,6 +58,10 @@ const MyRecipes: React.FC = () => {
     },
     [addToast],
   );
+
+  async function cleanSearch(): Promise<void> {
+    loadData();
+  }
 
   async function deleteRecipe(id: number): Promise<void> {
     try {
@@ -97,21 +102,27 @@ const MyRecipes: React.FC = () => {
         <Content>
           <div>
             <Formik initialValues={{ search: '' }} onSubmit={handleSubmit}>
-              <Form>
-                <input
-                  name="search"
-                  defaultValue=""
-                  type="text"
-                  placeholder="Pesquisar..."
-                />
-                <button type="submit">
-                  <AiOutlineSearch />
-                </button>
-              </Form>
+              {({ values, errors }) => (
+                <Form>
+                  <Input
+                    name="search"
+                    value={values.search}
+                    error={errors.search}
+                    type="text"
+                    placeholder="Pesquisar..."
+                  />
+                  <button type="submit">
+                    <AiOutlineSearch />
+                  </button>
+                </Form>
+              )}
             </Formik>
             <Link to="/add">
               <Button>Adicionar receitas</Button>
             </Link>
+          </div>
+          <div className="div-btn">
+            <button onClick={cleanSearch}>Limpar pesquisa</button>
           </div>
 
           <Table>

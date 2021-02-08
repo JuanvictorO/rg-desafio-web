@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { BiChevronLeft } from 'react-icons/bi';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -9,6 +9,7 @@ import { useToast } from '../../../../hooks/toast';
 import Button from '../../../../shared/components/Button';
 import Header from '../../../../shared/components/Header';
 import Input from '../../../../shared/components/Input';
+import Textarea from '../../../../shared/components/Textarea';
 import api from '../../../../shared/services/api';
 import { addRecipeValidation } from '../../validations/addRecipeValidation';
 
@@ -19,7 +20,7 @@ interface addRecipeFormData {
   id_categorias: number;
   tempo_preparo_minutos: string;
   porcoes: string;
-  modo_preparo: string | null;
+  modo_preparo: string;
   ingredientes: string;
 }
 
@@ -31,28 +32,21 @@ interface Category {
 const AddRecipe: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [categories, setCategories] = useState<Category[] | null>(null);
-
+  const history = useHistory();
   const { addToast } = useToast();
 
   const handleSubmit = useCallback(
     async (data: addRecipeFormData) => {
       setLoading(true);
       try {
-        // const preparo = document.getElementById('preparo').value;
-        await api.post('recipes', {
-          id_categorias: data.id_categorias,
-          nome: data.nome,
-          tempo_preparo_minutos: data.tempo_preparo_minutos,
-          porcoes: data.porcoes,
-          modo_preparo: data.modo_preparo,
-        });
-        console.log(data);
+        await api.post('recipes', data);
+
         addToast({
           type: 'success',
           title: 'Receita cadastrada',
         });
 
-        window.location.reload();
+        history.push('/dashboard');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           setLoading(false);
@@ -67,7 +61,7 @@ const AddRecipe: React.FC = () => {
         setLoading(false);
       }
     },
-    [addToast],
+    [addToast, history],
   );
 
   useEffect(() => {
@@ -111,7 +105,7 @@ const AddRecipe: React.FC = () => {
               // eslint-disable-next-line prettier/prettier
               validationSchema={addRecipeValidation}
             >
-              {({ values, errors }) => (
+              {({ values, errors, handleChange, handleBlur }) => (
                 <Form id="Addreceita">
                   <h1>Adicione uma receita</h1>
                   <Input
@@ -121,21 +115,27 @@ const AddRecipe: React.FC = () => {
                     type="text"
                     label="Nome"
                   />
-
                   <div className="divSelect">
                     <p>Categoria: </p>
-                    <select id="categoria" name="id_categorias">
+                    <select
+                      id="categoria"
+                      name="id_categorias"
+                      value={values.id_categorias}
+                      // eslint-disable-next-line prettier/prettier
+                      onChange={handleChange}
+                    >
                       {!loading &&
                         categories &&
                         categories.map((category) => (
-                          <option value={category.id}>{category.nome}</option>
+                          <option key={category.id} value={category.id}>
+                            {category.nome}
+                          </option>
                         ))}
                     </select>
                   </div>
 
                   <Input
                     name="tempo_preparo_minutos"
-                    defaultValue=""
                     value={values.tempo_preparo_minutos}
                     error={errors.tempo_preparo_minutos}
                     type="number"
@@ -149,18 +149,24 @@ const AddRecipe: React.FC = () => {
                     label="Quantidade de porçôes"
                   />
 
-                  <textarea
+                  <Textarea
+                    id="ingredientes"
+                    name="ingredientes"
+                    defaultValue={values.ingredientes}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors.ingredientes}
+                    placeholder="Ingredientes"
+                  />
+
+                  <Textarea
                     id="preparo"
                     name="modo_preparo"
                     defaultValue={values.modo_preparo}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors.modo_preparo}
                     placeholder="Modo de Preparo"
-                  />
-
-                  <textarea
-                    id="ingredientes"
-                    name="ingredientes"
-                    defaultValue=""
-                    placeholder="Ingredientes"
                   />
 
                   <DivBox>

@@ -8,7 +8,7 @@ import { Container, Error } from './styles';
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
   error?: string;
-  defaultValue?: string;
+  defaultValue?: string | number;
   label?: string;
 }
 

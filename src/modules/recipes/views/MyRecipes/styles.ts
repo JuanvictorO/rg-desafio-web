@@ -34,17 +34,22 @@ export const Content = styled.div`
       @media (max-width: 550px) {
         margin-bottom: 20px;
       }
-      input {
-        border-width: 0px;
-        background: white;
-        color: black;
-        padding: 13px 10px 7px 10px;
+
+      div {
+        float: left;
+        flex-direction: row;
+        input {
+          border-width: 0px;
+          background: white;
+          color: black;
+          padding: 13px 10px 7px 10px;
+        }
       }
 
       button {
         border-width: 0;
         background: rgb(29, 161, 242);
-        padding: 7px 10px;
+        padding: 9px 10px;
         transition: 0.2s background;
         svg {
           font-size: 20px;
@@ -53,6 +58,21 @@ export const Content = styled.div`
         &:hover {
           background: rgb(56, 68, 77);
         }
+      }
+    }
+  }
+  .div-btn {
+    margin-top: 20px;
+    button {
+      color: white;
+      border-width: 0;
+      border-radius: 5px;
+      background: rgb(29, 161, 242);
+      padding: 9px 10px;
+      transition: 0.2s background;
+
+      &:hover {
+        background: rgb(56, 68, 77);
       }
     }
   }

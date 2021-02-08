@@ -79,7 +79,7 @@ const SignIn: React.FC = () => {
                   value={values.senha}
                   name="senha"
                   error={errors.senha}
-                  type="senha"
+                  type="password"
                   label="Senha"
                 />
 

@@ -74,21 +74,6 @@ export const FormContainer = styled.div`
         }
       }
     }
-
-    textarea {
-      width: 100%;
-      margin-top: 40px;
-      padding: 10px;
-      color: black;
-      resize: none;
-      height: 100px;
-
-      &::placeholder {
-        color: black;
-        opacity: 0.6;
-        font-weight: 600;
-      }
-    }
   }
 `;
 

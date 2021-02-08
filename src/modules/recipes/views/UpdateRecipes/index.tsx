@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { BiChevronLeft } from 'react-icons/bi';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -9,6 +9,7 @@ import { useToast } from '../../../../hooks/toast';
 import Button from '../../../../shared/components/Button';
 import Header from '../../../../shared/components/Header';
 import Input from '../../../../shared/components/Input';
+import Textarea from '../../../../shared/components/Textarea';
 import api from '../../../../shared/services/api';
 import { addRecipeValidation } from '../../validations/addRecipeValidation';
 
@@ -28,10 +29,14 @@ interface Category {
   nome: string;
 }
 
+interface ParamsRoute {
+  id: string | undefined;
+}
+
 const UpdateRecipe: React.FC = () => {
+  const { id } = useParams<ParamsRoute>();
   const [loading, setLoading] = useState<boolean>(false);
   const [categories, setCategories] = useState<Category[] | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [recipe, setRecipe] = useState<UpdateRecipeFormData | null>(null);
   const history = useHistory();
 
@@ -41,7 +46,7 @@ const UpdateRecipe: React.FC = () => {
     async (data: UpdateRecipeFormData) => {
       setLoading(true);
       try {
-        await api.put('recipes/id', data);
+        await api.put(`recipes/${id}`, data);
 
         addToast({
           type: 'success',
@@ -67,7 +72,7 @@ const UpdateRecipe: React.FC = () => {
   );
 
   useEffect(() => {
-    async function loadData(): Promise<void> {
+    async function loadCategories(): Promise<void> {
       setLoading(true);
 
       try {
@@ -85,11 +90,11 @@ const UpdateRecipe: React.FC = () => {
       }
     }
 
-    async function loadData2(): Promise<void> {
+    async function loadData(): Promise<void> {
       setLoading(true);
 
       try {
-        const response = await api.get('recipe/id');
+        const response = await api.get(`recipes/${id}`);
 
         setRecipe(response.data);
       } catch (err) {
@@ -103,9 +108,9 @@ const UpdateRecipe: React.FC = () => {
       }
     }
 
+    loadCategories();
     loadData();
-    loadData2();
-  }, [addToast]);
+  }, [addToast, id]);
 
   return (
     <>
@@ -113,99 +118,113 @@ const UpdateRecipe: React.FC = () => {
       <Container>
         <Content>
           <FormContainer>
-            <Formik
-              initialValues={{
-                nome: 'Teste',
-                id_categorias: 1,
-                tempo_preparo_minutos: 45,
-                porcoes: 1,
-                modo_preparo: 'Asdfasf asf ',
-                ingredientes: 'a sdf sad f',
-              }}
-              onSubmit={handleSubmit}
-              // eslint-disable-next-line prettier/prettier
-              validationSchema={addRecipeValidation}
-            >
-              {({ values, errors }) => (
-                <Form id="Addreceita">
-                  <h1>Alterar receita</h1>
-                  <div>
-                    <p>Nome:</p>
-                    <Input
-                      name="nome"
-                      value={values.nome}
-                      error={errors.nome}
-                      type="text"
-                      placeholder="Nome"
-                    />
-                  </div>
+            {!loading && recipe && categories && (
+              <Formik
+                key={recipe.id_categorias}
+                initialValues={{
+                  nome: recipe.nome,
+                  id_categorias: Number(recipe.id_categorias),
+                  tempo_preparo_minutos: recipe.tempo_preparo_minutos,
+                  porcoes: recipe.porcoes,
+                  modo_preparo: recipe.modo_preparo,
+                  ingredientes: recipe.ingredientes,
+                }}
+                onSubmit={handleSubmit}
+                // eslint-disable-next-line prettier/prettier
+                validationSchema={addRecipeValidation}
+              >
+                {({ values, errors, handleChange, handleBlur }) => (
+                  <Form id="Addreceita">
+                    <h1>Alterar receita</h1>
+                    <div>
+                      <p>Nome:</p>
+                      <Input
+                        name="nome"
+                        value={values.nome}
+                        error={errors.nome}
+                        type="text"
+                        placeholder="Nome"
+                      />
+                    </div>
 
-                  <div className="divSelect">
-                    <p>Categoria: </p>
-                    <select
-                      id="categoria"
-                      value={values.id_categorias}
-                      name="id_categorias">
-                      {!loading &&
-                        categories &&
-                        categories.map((category) => (
-                          <option value={category.id}>{category.nome}</option>
-                        ))}
-                    </select>
-                  </div>
-                  <div>
-                    <p>Tempo de Preparo:</p>
-                    <Input
-                      name="tempo_preparo_minutos"
-                      defaultValue=""
-                      error={errors.tempo_preparo_minutos}
-                      value={values.tempo_preparo_minutos}
-                      type="number"
-                      placeholder="Tempo de preparo"
-                    />
-                  </div>
-                  <div>
-                    <p>Porções:</p>
-                    <Input
-                      name="porcoes"
-                      defaultValue=""
-                      error={errors.porcoes}
-                      value={values.porcoes}
-                      type="number"
-                      placeholder="Porções"
-                    />
-                  </div>
+                    <div className="divSelect">
+                      <p>Categoria: </p>
+                      <select
+                        id="categoria"
+                        onChange={handleChange}
+                        value={values.id_categorias}
+                        // eslint-disable-next-line prettier/prettier
+                        name="id_categorias"
+                      >
 
-                  <div>
-                    <p>Modo de Preparo:</p>
-                    <textarea
-                      name="modo_preparo"
-                      placeholder="Modo de Preparo"
-                      value={values.modo_preparo}
-                    />
-                  </div>
+                        {categories &&
+                          categories.map((category) => (
+                            <option value={category.id} selected>
+                              {category.nome}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                    <div>
+                      <p>Tempo de Preparo:</p>
+                      <Input
+                        name="tempo_preparo_minutos"
+                        error={errors.tempo_preparo_minutos}
+                        defaultValue={values.tempo_preparo_minutos}
+                        type="number"
+                        placeholder="Tempo de preparo"
+                      />
+                    </div>
+                    <div>
+                      <p>Porções:</p>
+                      <Input
+                        name="porcoes"
+                        error={errors.porcoes}
+                        defaultValue={values.porcoes}
+                        type="number"
+                        placeholder="Porções"
+                      />
+                    </div>
 
-                  <div>
-                    <p>Ingredientes:</p>
-                    <textarea
-                      name="ingredientes"
-                      value={values.ingredientes}
-                      placeholder="Ingredientes"
-                    />
-                  </div>
+                    <div>
+                      <p>Modo de Preparo:</p>
+                      <Textarea
+                        id="modo_preparo"
+                        name="modo_preparo"
+                        placeholder="Modo de Preparo"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        defaultValue={values.modo_preparo}
+                        error={errors.modo_preparo}
+                      />
+                    </div>
 
-                  <DivBox>
-                    <Link to="/">
-                      <BiChevronLeft size="24" />
-                      Voltar
-                    </Link>
-                    <Button type="submit" loading={loading}>
-                      Enviar
-                    </Button>
-                  </DivBox>
-                </Form>
-              )}
-            </Formik>
+                    <div>
+                      <p>Ingredientes:</p>
+                      <Textarea
+                        id="ingredientes"
+                        name="ingredientes"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        defaultValue={values.ingredientes}
+                        error={errors.ingredientes}
+                        placeholder="Ingredientes"
+                      />
+                    </div>
+
+                    <DivBox>
+                      <Link to="/">
+                        <BiChevronLeft size="24" />
+                        Voltar
+                      </Link>
+                      <Button type="submit" loading={loading}>
+                        Enviar
+                      </Button>
+                    </DivBox>
+                  </Form>
+                )}
+              </Formik>
+            )}
           </FormContainer>
         </Content>
       </Container>
